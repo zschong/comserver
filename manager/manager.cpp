@@ -27,7 +27,7 @@ void Manager::Start(void)
 	for(int i = 0; i< MAX_COM; i++)
 	{
 		mbtcp[i].SetComServer(server[i]);
-		mbtcp[i].Start("0.0.0.0", 10000+i);
+		mbtcp[i].Start("0.0.0.0", TCP_PORT+i);
 	}
 	while(1)
 	{

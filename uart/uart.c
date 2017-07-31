@@ -1,3 +1,4 @@
+#include <sys/ioctl.h>
 #include <time.h>
 #include "uart.h"
 

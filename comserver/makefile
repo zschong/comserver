@@ -1,5 +1,8 @@
 
-test: $(SRC) *.cpp ../config/comconfig.cpp ../config/varconfig.cpp
+SRC += ../config/comconfig.cpp
+SRC += ../config/varconfig.cpp
+SRC += ../uart/comport.cpp
+test: $(SRC) *.cpp  
 	$(CC) $(CFLAG) $(LDFAGS) $+
 
 clean:

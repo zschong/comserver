@@ -11,6 +11,14 @@
 extern "C"
 #endif//cplusplus
 
+enum
+{
+	Mode_422 = 0,
+	Mode_485 = 1,
+	Mode_232 = 2,
+};
+#define TIOCSERMODE 0x5460
+
 int uart_open(const char *path);
 int uart_config(int fd, int baud, char parity, int bsize, int stop);
 int uart_read(int fd, char *buf, int len);

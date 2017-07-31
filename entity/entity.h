@@ -19,8 +19,9 @@ public:
 	unsigned char fcode;
 	unsigned short offset;
 	unsigned short count;
+	unsigned short timeout;
 public:
-	ConfigNode(void):slave(0),fcode(0),offset(0),count(0){}
+	ConfigNode(void):slave(0),fcode(0),offset(0),count(0),timeout(100){}
 };
 
 class ComNode

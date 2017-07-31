@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "entity.h"
+#include "showhex.h"
 #include "modbus.h"
 #include "comserver.h"
 #include "modbustcp.h"
@@ -51,7 +52,7 @@ bool ModbusTcpServer::RecvData(void)
 	{
 		data.push_back(buf[i]);
 	}
-	return (len > 0);
+	return data.size();
 }
 bool ModbusTcpServer::FindHeader(void)
 {
@@ -62,6 +63,8 @@ bool ModbusTcpServer::FindHeader(void)
 		{
 			request.data[i] = data[i];
 		}
+		printf("data.size(%d)\n", data.size());
+		showhex(request.data, 8);
 		if( request.GetFcode() != 0x03 )
 		{
 			data.erase(data.begin(), data.begin()+1);
@@ -75,7 +78,7 @@ bool ModbusTcpServer::CheckData(void)
 {
 	if( comserver )
 	{
-		char buf[6] = {0};
+		char buf[8] = {0};
 
 		for(int i = 0; i < sizeof(buf); i++)
 		{
@@ -88,6 +91,13 @@ bool ModbusTcpServer::CheckData(void)
 		node.fcode = p->GetFcode();
 		node.offset = p->GetOffset();
 		node.count = p->GetCount();
+		printf("request%02X:s=%02X f=%02X o=%04X c=%04X\n",
+				node.fcode,
+				node.slave,
+				node.fcode,
+				node.offset,
+				node.count
+				);
 		map<int,unsigned short> values;
 		if(	comserver->GetValue(node, values) )
 		{
@@ -104,6 +114,7 @@ bool ModbusTcpServer::CheckData(void)
 			worker.Send((const char*)response.data, response.CRCLen()+2);
 		}
 	}
+	return true;
 }
 
 void ModbusTcpServer::Loop(void)

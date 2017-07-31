@@ -20,7 +20,7 @@ public:
 	bool TryLock(void);
 	bool Unlock(void);
 private:
-	virtual void Loop(void){assert(0);}
+	virtual void Loop(void){}//assert(0);}
 private:
 	static void* ThreadEntry(void *p);
 };

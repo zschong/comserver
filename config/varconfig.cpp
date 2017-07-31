@@ -70,6 +70,11 @@ void VarConfig::Xchange(FieldNode& node)
 		v.fcode  = node.field3.toint();
 		v.offset = node.field4.toint();
 		v.count  = node.field5.toint();
+		v.timeout = node.field5.toint();
+		if( v.timeout < 20 )
+		{
+			v.timeout = 20;
+		}
 	}
 }
 void VarConfig::Show(void)

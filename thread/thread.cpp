@@ -28,6 +28,7 @@ void* Thread::ThreadEntry(void *p)
 {
 	Thread *t = (Thread*)p;
 
+	sleep(1);
 	while(t->run)
 	{
 		t->Loop();

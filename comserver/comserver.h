@@ -4,6 +4,7 @@
 #include "thread.h"
 #include "entity.h"
 #include "modbus.h"
+#include "comreader.h"
 
 
 class ComServer : public Thread
@@ -11,6 +12,7 @@ class ComServer : public Thread
 private:
 	xstring name;
 	ComNode comconfig;
+	ComReader reader;
 	Mutex comlock;
 	Mutex cachelock;
 	Mutex configlockA;
@@ -30,6 +32,7 @@ public:
 	bool GetValue(const ConfigNode&, map<int, unsigned short>&);
 private:
 	void Loop(void);	
+	void RecvData(void);
 	void CheckCom(void);
 	void CheckConfig(void);
 	void Request(ConfigNode& node);

@@ -1,3 +1,4 @@
+#include "showhex.h"
 #include "comserver.h"
 
 
@@ -86,37 +87,59 @@ void ComServer::CheckCom(void)
 		comconfig.parity,
 		comconfig.bsize,
 		comconfig.stop);
+		if( reader.Open(comconfig.name) )
+		{
+			if( reader.Set(comconfig.baud,
+						comconfig.parity,
+						comconfig.bsize,
+						comconfig.stop) 
+			&& reader.SetMode(Mode_485) )
+			{
+				comchange = false;
+				printf("config.ok\n");
+			}
+		}
 		comlock.Unlock();
 	}
 }
 void ComServer::Request(ConfigNode& node)
 {
-	unsigned char slave = node.slave;
-	unsigned char fcode = node.fcode;
-	unsigned short offset = node.offset;
-	unsigned short count  = node.count;
-
-	switch(fcode)
+	switch(node.fcode)
 	{
 	case 0x01:
 	case 0x02:
 	case 0x03:
 	case 0x04:
 	{
-		Requestx01 request;
-		Responsex01 respons;
+		Requestx03 request;
 
-		request.SetSlave(slave);
-		request.SetFcode(fcode);
-		request.SetOffset(offset);
-		request.SetCount(count);
-		request.SetCRC(request.CalcCRC());
-		for(int i = 0; i < request.CRCLen()+2; i++)
+		//make request frame
+		request.SetSlave( node.slave );
+		request.SetFcode( node.fcode );
+		request.SetOffset( node.offset );
+		request.SetCount( node.count );
+		request.SetCRC( request.CalcCRC() );
+
+		//clear recv buffer
+		reader.ReadData();
+		reader.ReadData();
+		reader.Cleanup();
+
+		//send frame
+		reader.Send(request.data, request.CRCLen()+2);
+
+		//recieve response data in timeout seconds
+		for(int i = 0; i < node.timeout; i++)
 		{
-			printf("%02X ", request.data[i]);
+			unsigned char *p = reader.ReadData();
+			Responsex03 *res = (Responsex03*)p;
+			if( res->Check() )
+			{
+				Response(request, *res);
+				break;
+			}
+			usleep(1000);
 		}
-		printf(":check %s\n", request.Check() ? "ok" : "no");
-		Response(request, respons);
 	}break;
 	case 0x05:
 	case 0x06:
@@ -154,11 +177,12 @@ void ComServer::Response(ModbusBase &req, ModbusBase &res)
 			unsigned short offset= request->GetOffset();
 			unsigned short count = request->GetCount();
 			unsigned char bcount = respons->GetBcount()/2;
+			showhex(res.data, 9);
 			if( cachelock.Lock() )
 			{
 				for(int i = 0; i < bcount; i++)
 				{
-					int key = (slave << 16) | (offset+=2);
+					int key = (slave << 16) | (offset+i*2);
 					ValueNode &vnode = cache[key];
 					vnode.slave = slave;
 					vnode.offset = offset;

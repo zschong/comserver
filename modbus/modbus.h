@@ -1,5 +1,6 @@
 #ifndef __MODBUS_H__
 #define __MODBUS_H__
+#include <stdio.h>
 #include "crc16.h"
 
 class ModbusBase
@@ -115,7 +116,7 @@ class Responsex01 : public ModbusBase
 public://[slave,fcode,bcount,data,crc].len=[1,1,1,bcount,2];
 	unsigned char GetBcount(void){return GetChar(2);}
 	unsigned char GetValue(int i){return GetChar(3+i/8)>>(i%8) & 1;}
-	unsigned short GetCRC(void)	 {return GetShortLH(4+GetBcount());}
+	unsigned short GetCRC(void)	 {return GetShortLH(3+GetBcount());}
 	unsigned short CRCLen(void)	 {return 1+1+1+GetBcount();}
 	unsigned short CalcCRC(void) {return CRC16(data, CRCLen());}
 	const bool     Check(void)	 {return CalcCRC()==GetCRC();}
@@ -126,10 +127,10 @@ class Responsex03 : public ModbusBase
 public://[slave,fcode,bcount,data,crc].len=[1,1,1,bcount,2];
 	void SetBcount(unsigned char value)		  {SetChar(2, value);}
 	void SetValue(int i, unsigned short value){SetShortHL(3+i*2, value);}
-	void SetCRC(unsigned short value)		  {SetShortHL(4+GetBcount(), value);}
+	void SetCRC(unsigned short value)		  {SetShortHL(3+GetBcount(), value);}
 	unsigned char  GetBcount(void){return GetChar(2);}
 	unsigned short GetValue(int i){return GetShortHL(3+i*2);}
-	unsigned short GetCRC(void)	  {return GetShortLH(4+GetBcount());}
+	unsigned short GetCRC(void)	  {return GetShortLH(3+GetBcount());}
 	unsigned short CRCLen(void)	  {return 1+1+1+GetBcount();}
 	unsigned short CalcCRC(void)  {return CRC16(data, CRCLen());}
 	const bool     Check(void)	  {return CalcCRC()==GetCRC();}

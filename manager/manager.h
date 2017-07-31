@@ -5,7 +5,8 @@
 #include "comserver.h"
 #include "modbustcp.h"
 
-#define MAX_COM	1
+#define MAX_COM		8
+#define TCP_PORT	1000
 
 class Manager
 {

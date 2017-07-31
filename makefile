@@ -1,4 +1,5 @@
 CC := g++
+CC := arm-linux-g++
 CFLAG := -I$(shell pwd)/config
 CFLAG += -I$(shell pwd)/uart
 CFLAG += -I$(shell pwd)/thread
