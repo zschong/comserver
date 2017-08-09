@@ -63,8 +63,6 @@ bool ModbusTcpServer::FindHeader(void)
 		{
 			request.data[i] = data[i];
 		}
-		printf("data.size(%d)\n", data.size());
-		showhex(request.data, 8);
 		if( request.GetFcode() != 0x03 )
 		{
 			data.erase(data.begin(), data.begin()+1);
@@ -91,14 +89,9 @@ bool ModbusTcpServer::CheckData(void)
 		node.fcode = p->GetFcode();
 		node.offset = p->GetOffset();
 		node.count = p->GetCount();
-		printf("request%02X:s=%02X f=%02X o=%04X c=%04X\n",
-				node.fcode,
-				node.slave,
-				node.fcode,
-				node.offset,
-				node.count
-				);
+
 		map<int,unsigned short> values;
+
 		if(	comserver->GetValue(node, values) )
 		{
 			Responsex03 response;

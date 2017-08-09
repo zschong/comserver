@@ -6,10 +6,12 @@ class ValueNode
 {
 public:
 	unsigned char slave;
+	unsigned char fcode;
 	unsigned short offset;
 	unsigned short value;
+	unsigned int lastvalue;
 public:
-	ValueNode(void):slave(0),offset(0),value(0){}
+	ValueNode(void):slave(0),fcode(0),offset(0),value(0),lastvalue(0){}
 };
 
 class ConfigNode 

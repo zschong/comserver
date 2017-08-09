@@ -2,6 +2,22 @@
 #include "config-file.h"
 #include "config-field.h"
 
+ComConfig::ComConfig(void)
+{
+	{
+		InitNodes(16);
+	}
+}
+void ComConfig::InitNodes(int n)
+{
+	for(int i = 0; i < n; i++)
+	{
+		xstring comx, ttyx;
+		comx.format("com%d", i+1);
+		ttyx.format("/dev/ttyS%d", i);
+		devnodes[comx] = ttyx;
+	}
+}
 
 void ComConfig::GetConfig(const xstring& com, ComNode& node)
 {

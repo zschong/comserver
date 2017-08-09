@@ -1,8 +1,10 @@
+#include <unistd.h>
 #include "manager.h"
 
 
 void Manager::Start(void)
 {
+	chdir("/root/");
 	for(int i = 0; i < MAX_COM; i++)
 	{
 		names[i].format("com%d", i+1);

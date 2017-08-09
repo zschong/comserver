@@ -1,5 +1,7 @@
 CC := g++
 CC := arm-linux-g++
+STRIP := strip
+STRIP := arm-linux-strip
 CFLAG := -I$(shell pwd)/config
 CFLAG += -I$(shell pwd)/uart
 CFLAG += -I$(shell pwd)/thread
@@ -13,8 +15,9 @@ SRC += $(shell find $$(pwd)/uart/   | grep ".c$$")
 SRC += $(shell find $$(pwd)/socket/ | grep ".c$$")
 SRC += $(shell find $$(pwd)/modbus/ | grep ".c$$")
 SRC += $(shell find $$(pwd)/thread/ | grep ".cpp$$")
-LDFAGS := -lpthread -g
-export CC CFLAG SRC LDFAGS
+LDFAGS := -static -s -pthread
+#LDFAGS += /home/chong/arm/arm-uClibc/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/lib/libpthread.a
+export CC STRIP CFLAG SRC LDFAGS
 
 default:
 	@for i in $(SRC);do echo $$i;done

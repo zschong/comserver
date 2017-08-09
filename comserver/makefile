@@ -2,8 +2,9 @@
 SRC += ../config/comconfig.cpp
 SRC += ../config/varconfig.cpp
 SRC += ../uart/comport.cpp
-test: $(SRC) *.cpp  
-	$(CC) $(CFLAG) $(LDFAGS) $+
+comserver: $(SRC) *.cpp  
+	$(CC) $(CFLAG) $(LDFAGS) $+ -o $@
+	$(STRIP) -s $@
 
 clean:
 	@rm -rfv a.out

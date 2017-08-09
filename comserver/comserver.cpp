@@ -18,6 +18,7 @@ bool ComServer::SetName(const xstring& comname)
 	if( Lock() )
 	{
 		name = comname;
+		storage.SetName(name);
 		Unlock();
 		return true;
 	}
@@ -40,22 +41,23 @@ bool ComServer::GetValue(const ConfigNode& node, map<int,unsigned short>& m)
 	if( cachelock.Lock() )
 	{
 		m.clear();
-		for(unsigned short i = 0; i < node.offset; i++)
+		for(unsigned short i = 0; i < node.count; i++)
 		{
-			int key = (node.slave << 16) + (node.offset + i);
+			int key = (node.slave << 24) | (node.fcode << 16) | (node.offset + i);
 			map<int,ValueNode>::iterator it = cache.find(key);
 
-			if( it == cache.end() )
+			if( cache.end() == it )
 			{
-				m[i] = 0;
+				break;//unlock
 			}
-			else
+			if( abs(time(0) - it->second.lastvalue) > 4 )
 			{
-				m[i] = it->second.value;
+				break;//unlock
 			}
+			m[i] = it->second.value;
 		}
 		cachelock.Unlock();
-		return (m.size() > 0);
+		return (m.size() == node.count);
 	}
 	return false;
 }
@@ -81,12 +83,6 @@ void ComServer::CheckCom(void)
 	}
 	if( comlock.Lock() )
 	{
-		printf("%s,%d,%d,%d,%d\n",
-		comconfig.name.data(),
-		comconfig.baud,
-		comconfig.parity,
-		comconfig.bsize,
-		comconfig.stop);
 		if( reader.Open(comconfig.name) )
 		{
 			if( reader.Set(comconfig.baud,
@@ -96,7 +92,6 @@ void ComServer::CheckCom(void)
 			&& reader.SetMode(Mode_485) )
 			{
 				comchange = false;
-				printf("config.ok\n");
 			}
 		}
 		comlock.Unlock();
@@ -171,23 +166,30 @@ void ComServer::Response(ModbusBase &req, ModbusBase &res)
 	case 0x03:
 	case 0x04:
 		{
-			Requestx03  *request = (Requestx03*)&req;
-			Responsex03 *respons = (Responsex03*)&res;
-			unsigned char  slave = respons->GetSlave();
-			unsigned short offset= request->GetOffset();
-			unsigned short count = request->GetCount();
-			unsigned char bcount = respons->GetBcount()/2;
-			showhex(res.data, 9);
+			Requestx03  &request = *(Requestx03*)&req;
+			Responsex03 &respons = *(Responsex03*)&res;
+			unsigned short offset= request.GetOffset();
+			unsigned short count = request.GetCount();
+			unsigned char  slave = respons.GetSlave();
+			unsigned char  fcode = respons.GetFcode();
+			unsigned char bcount = respons.GetBcount()/2;
+			//showhex(res.data, respons.CRCLen()+2);
 			if( cachelock.Lock() )
 			{
 				for(int i = 0; i < bcount; i++)
 				{
-					int key = (slave << 16) | (offset+i*2);
+					int key = (slave << 24) | (fcode << 16) | (offset+i);
 					ValueNode &vnode = cache[key];
 					vnode.slave = slave;
-					vnode.offset = offset;
-					vnode.value = respons->GetValue(i);
+					vnode.fcode = fcode;
+					vnode.offset = offset+i;
+					vnode.value = respons.GetValue(i);
+					vnode.lastvalue = time(0);
 				}
+				//showhex(request.data, request.CRCLen()+2);
+				//showhex(respons.data, respons.CRCLen()+2);
+				//storage history values
+				storage.Store(cache);
 				cachelock.Unlock();
 			}
 		}break;

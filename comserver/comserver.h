@@ -4,6 +4,7 @@
 #include "thread.h"
 #include "entity.h"
 #include "modbus.h"
+#include "storage.h"
 #include "comreader.h"
 
 
@@ -11,6 +12,7 @@ class ComServer : public Thread
 {
 private:
 	xstring name;
+	Storage storage;
 	ComNode comconfig;
 	ComReader reader;
 	Mutex comlock;

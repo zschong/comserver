@@ -61,7 +61,9 @@ void VarConfig::GetLine(const char *line)
 void VarConfig::Xchange(FieldNode& node)
 {
 	xstring keyA = node.field1;
-	int keyB = (node.field2.toint() << 16) | node.field4.toint();
+	int keyB = (node.field2.toint() << 24) 
+			 |  node.field3.toint() << 16 
+			 |  node.field4.toint() <<  0;
 
 	if( keyA.empty() == false )
 	{
@@ -70,7 +72,7 @@ void VarConfig::Xchange(FieldNode& node)
 		v.fcode  = node.field3.toint();
 		v.offset = node.field4.toint();
 		v.count  = node.field5.toint();
-		v.timeout = node.field5.toint();
+		v.timeout = node.field6.toint();
 		if( v.timeout < 20 )
 		{
 			v.timeout = 20;
@@ -87,7 +89,8 @@ void VarConfig::Show(void)
 			printf("%d, ", j->second.slave);
 			printf("%d, ", j->second.fcode);
 			printf("%d, ", j->second.offset);
-			printf("%d]\n", j->second.count);
+			printf("%d, ", j->second.count);
+			printf("%d]\n", j->second.timeout);
 		}
 	}
 }
@@ -99,7 +102,8 @@ void VarConfig::ShowConfigNode(map<int,ConfigNode>& m)
 		printf(" %d,", i->second.slave);
 		printf(" %d,", i->second.fcode);
 		printf(" %d,", i->second.offset);
-		printf(" %d]\n", i->second.count);
+		printf(" %d,", i->second.count);
+		printf(" %d]\n", i->second.timeout);
 	}
 
 }

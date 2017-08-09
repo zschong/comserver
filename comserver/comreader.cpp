@@ -1,3 +1,4 @@
+#include "showhex.h"
 #include "comreader.h"
 
 unsigned char* ComReader::ReadData(void)
@@ -12,6 +13,7 @@ unsigned char* ComReader::ReadData(void)
 }
 int ComReader::Send(unsigned char *data, int len)
 {
+	//showhex(data, len);
 	return ComPort::Send(data, len);
 }
 unsigned char* ComReader::Data(void)
