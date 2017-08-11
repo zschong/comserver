@@ -4,7 +4,7 @@ Storage::Storage(void)
 {
 	laststore = time(0);
 	lastremove = 0;
-	storetimeout = 5*60;
+	storetimeout = 5;//*60;
 	removetimeout = 24 * 60 * 60;
 	storedir = "/root/history/";
 	prefix = "comx";

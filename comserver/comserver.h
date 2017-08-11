@@ -32,6 +32,7 @@ public:
 	bool SetName(const xstring& comname);
 	bool SetConfig(map<int, ConfigNode>&);
 	bool GetValue(const ConfigNode&, map<int, unsigned short>&);
+	bool GetJson(xstring& s);
 private:
 	void Loop(void);	
 	void RecvData(void);

@@ -61,6 +61,47 @@ bool ComServer::GetValue(const ConfigNode& node, map<int,unsigned short>& m)
 	}
 	return false;
 }
+bool ComServer::GetJson(xstring& s)
+{
+	bool change = false;
+
+	s.clear();
+
+	if( cachelock.Lock() )
+	{
+		s = "{\"valus\",[";
+		for(map<int,ValueNode>::iterator i = cache.begin(); i != cache.end(); i++)
+		{
+			if( abs(time(0) - i->second.lastvalue ) >= 5 )
+			{
+				continue;
+			}
+			xstring kv;
+			s += "{";
+			kv.format("\"%s\":%d,", "slave", i->second.slave);
+			s += kv;
+			kv.format("\"%s\":%d,", "fcode", i->second.fcode);
+			s += kv;
+			kv.format("\"%s\":%d,", "offset", i->second.offset);
+			s += kv;
+			kv.format("\"%s\":%d", "value", i->second.value);
+			s += kv;
+			s += "},";
+			change = true;
+		}
+		if( change )
+		{
+			s[s.length()-1] = ']';
+		}
+		else
+		{
+			s += "]";
+		}
+		s += "}";
+		cachelock.Unlock();
+	}
+	return (s.empty() == false);
+}
 void ComServer::CheckConfig(void)
 {
 	if( !configchange )
@@ -91,6 +132,13 @@ void ComServer::CheckCom(void)
 						comconfig.stop) 
 			&& reader.SetMode(Mode_485) )
 			{
+				printf("%s(%d,%d,%d,%d)\n",
+				comconfig.name.data(),
+				comconfig.baud,
+				comconfig.parity,
+				comconfig.bsize,
+				comconfig.stop
+				);
 				comchange = false;
 			}
 		}

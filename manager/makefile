@@ -7,6 +7,7 @@ SRC += ../comserver/storage.cpp
 SRC += ../uart/comport.cpp
 SRC += ../tcpserver/modbustcp.cpp
 SRC += ../tcpserver/tcpserver.cpp
+SRC += ../tcpserver/jsonserver.cpp
 
 comserver: $(SRC) *.cpp  
 	$(CC) $(CFLAG) $(LDFAGS) $+ -o $@ 
