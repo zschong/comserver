@@ -6,7 +6,7 @@ int uart_open(const char *path)
 {
 	if( path )
 	{
-		return open(path, O_RDWR);
+		return open(path, O_RDWR | O_NOCTTY | O_NONBLOCK);
 	}
 	return -1;
 }

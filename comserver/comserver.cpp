@@ -31,6 +31,7 @@ bool ComServer::SetConfig(map<int, ConfigNode>& m)
 		configA.clear();
 		configA = m;
 		configchange = true;
+		printf("%s.SetConfig(%d)=%d\n", name.data(), m.size(), configA.size());
 		configlockA.Unlock();
 		return true;
 	}
@@ -113,6 +114,7 @@ void ComServer::CheckConfig(void)
 		configB.clear();
 		configB = configA;
 		configchange = false;
+		printf("%s.CheckConfig(%d)=%d\n", name.data(), configA.size(), configB.size());
 		configlockA.Unlock();
 	}
 }
@@ -130,7 +132,7 @@ void ComServer::CheckCom(void)
 						comconfig.parity,
 						comconfig.bsize,
 						comconfig.stop) 
-			&& reader.SetMode(Mode_485) )
+			)//&& reader.SetMode(Mode_485) )
 			{
 				printf("%s(%d,%d,%d,%d)\n",
 				comconfig.name.data(),
@@ -140,6 +142,15 @@ void ComServer::CheckCom(void)
 				comconfig.stop
 				);
 				comchange = false;
+			}
+			else
+			{
+				printf("failed:%s(%d,%d,%d,%d)\n",
+						comconfig.name.data(),
+						comconfig.baud,
+						comconfig.parity,
+						comconfig.bsize,
+						comconfig.stop);
 			}
 		}
 		comlock.Unlock();
@@ -255,10 +266,25 @@ void ComServer::Response(ModbusBase &req, ModbusBase &res)
 		}break;
 	}
 }
+
+bool ComServer::SetDebugMode(bool mode)
+{
+	return debugmode = mode;
+}
+ComReader& ComServer::GetComReader(void)
+{
+	return reader;
+}
 void ComServer::Loop(void)
 {
 	CheckCom();
 	CheckConfig();
+
+	if( debugmode )
+	{
+		sleep(1);
+		return;
+	}
 	for(B = configB.begin(); B != configB.end(); B++)
 	{
 		Request(B->second);

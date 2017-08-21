@@ -4,10 +4,12 @@
 
 void Manager::Start(void)
 {
+	sleep(1);
 	InitNames();
 	ReadConfigs();
 	StartComServer();
 	StartJsonServer();
+	StartDebugServer();
 	StartModubusServer();
 
 	while(1)
@@ -48,6 +50,14 @@ void Manager::StartJsonServer(void)
 	{
 		jsons[i].SetComServer(server[i]);
 		jsons[i].Start("0.0.0.0", JSON_PORT+i+1);
+	}
+}
+void Manager::StartDebugServer(void)
+{
+	for(int i = 0; i< MAX_COM; i++)
+	{
+		debugs[i].SetComServer(server[i]);
+		debugs[i].Start("0.0.0.0", DEBUG_PORT+i+1);
 	}
 }
 void Manager::StartModubusServer(void)

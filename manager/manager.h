@@ -5,10 +5,12 @@
 #include "comserver.h"
 #include "modbustcp.h"
 #include "jsonserver.h"
+#include "debugserver.h"
 
-#define MAX_COM		8
+#define MAX_COM		16	
 #define TCP_PORT	1000
 #define JSON_PORT	2000
+#define DEBUG_PORT	3000
 
 class Manager
 {
@@ -16,6 +18,7 @@ class Manager
 	ComConfig coms;
 	ComServer server[MAX_COM];
 	JsonServer jsons[MAX_COM];
+	DebugServer debugs[MAX_COM];
 	ModbusTcpServer mbtcp[MAX_COM];
 	map<int,xstring> names;
 
@@ -26,6 +29,7 @@ private:
 	void ReadConfigs(void);
 	void StartComServer(void);
 	void StartJsonServer(void);
+	void StartDebugServer(void);
 	void StartModubusServer(void);
 };
 
