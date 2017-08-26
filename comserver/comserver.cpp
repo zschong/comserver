@@ -1,3 +1,4 @@
+#include <iostream>
 #include "showhex.h"
 #include "comserver.h"
 
@@ -115,6 +116,14 @@ void ComServer::CheckConfig(void)
 		configB = configA;
 		configchange = false;
 		printf("%s.CheckConfig(%d)=%d\n", name.data(), configA.size(), configB.size());
+		for(map<int, ConfigNode>::iterator i = configB.begin(); i != configB.end(); i++)
+		{
+			printf("slave = %d ", i->second.slave);
+			printf("fcode = %d ", i->second.fcode);
+			printf("offset = %d ", i->second.offset);
+			printf("count = %d ", i->second.count);
+			printf("timeout = %d\n", i->second.timeout);
+		}
 		configlockA.Unlock();
 	}
 }
@@ -132,7 +141,7 @@ void ComServer::CheckCom(void)
 						comconfig.parity,
 						comconfig.bsize,
 						comconfig.stop) 
-			)//&& reader.SetMode(Mode_485) )
+			&& reader.SetMode(Mode_485) )
 			{
 				printf("%s(%d,%d,%d,%d)\n",
 				comconfig.name.data(),

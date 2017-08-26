@@ -8,7 +8,7 @@ void Manager::Start(void)
 	InitNames();
 	ReadConfigs();
 	StartComServer();
-	StartJsonServer();
+	//StartJsonServer();
 	StartDebugServer();
 	StartModubusServer();
 

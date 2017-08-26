@@ -30,11 +30,15 @@ public:
 	}
 	unsigned short GetShortHL(int i)const
 	{
-		return (GetChar(i)<<8) | GetChar(i+1);
+		unsigned short hig = GetChar(i);
+		unsigned short low = GetChar(i+1);
+		return (hig << 8) | low;
 	}
 	unsigned short GetShortLH(int i)const
 	{
-		return (GetChar(i+1)<<8) | GetChar(i);
+		unsigned short hig = GetChar(i+1);
+		unsigned short low = GetChar(i);
+		return (hig << 8) | low;
 	}
 	const bool GetBit(int i)
 	{
@@ -127,7 +131,7 @@ class Responsex03 : public ModbusBase
 public://[slave,fcode,bcount,data,crc].len=[1,1,1,bcount,2];
 	void SetBcount(unsigned char value)		  {SetChar(2, value);}
 	void SetValue(int i, unsigned short value){SetShortHL(3+i*2, value);}
-	void SetCRC(unsigned short value)		  {SetShortHL(3+GetBcount(), value);}
+	void SetCRC(unsigned short value)		  {SetShortLH(3+GetBcount(), value);}
 	unsigned char  GetBcount(void){return GetChar(2);}
 	unsigned short GetValue(int i){return GetShortHL(3+i*2);}
 	unsigned short GetCRC(void)	  {return GetShortLH(3+GetBcount());}

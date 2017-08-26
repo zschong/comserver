@@ -4,7 +4,7 @@ Storage::Storage(void)
 {
 	laststore = time(0);
 	lastremove = 0;
-	storetimeout = 5;//*60;
+	storetimeout = 5*60;
 	removetimeout = 24 * 60 * 60;
 	storedir = "/root/history/";
 	prefix = "comx";
@@ -98,8 +98,8 @@ void Storage::Store(FILE *fp, map<u8,map<u8,map<u16,u16> > >& mmm)
 			for(B = A->second.begin(); B != A->second.end(); B++)
 			{
 				list<u16> vlist;
-				unsigned char offset = 0;
-				unsigned char begin = 0;
+				unsigned short offset = 0;
+				unsigned short begin = 0;
 				for(C = B->second.begin(); C != B->second.end(); C++)
 				{
 					if( vlist.begin() == vlist.end() )
