@@ -7,4 +7,4 @@ comserver: $(SRC) *.cpp
 	$(STRIP) -s $@
 
 clean:
-	@rm -rfv a.out
+	@rm -rfv a.out comserver
